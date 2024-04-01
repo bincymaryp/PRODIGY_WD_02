@@ -4,22 +4,32 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stopwatch</title>
     <style>
-        :root {
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300&display=swap');
+:root {
             font-size: 82.5%; 
     --color-secondary: hsl(358, 81%, 63%);
 }
-       *,
-*:before,
-*:after {
+* {
+    box-sizing: border-box;
     padding: 0;
     margin: 0;
-    box-sizing: border-box;
 }
 
 body {
-    background:hsl(235, 35%, 19%);
+    font-family: 'Montserrat', sans-serif;
+    background: #082032;
+    color: whitesmoke;
+}
+
+h1 {
+    margin: 10px 0 0 20px;
+    user-select: none;
+}
+
+footer {
+    text-align: center;
+    user-select: none;
 }
 
 .container {
@@ -36,9 +46,11 @@ body {
     font-size:25px;
 }
 
-
-.timer-display {
-  display: flex;
+.time {
+    font-size: 5rem;
+    margin-bottom: 10px;
+    user-select: none;
+    display: flex;
     justify-content: center;
     align-items: center;
     width: 30rem;
@@ -46,116 +58,147 @@ body {
     border-radius: 50%;
     -webkit-box-shadow: 0px 0px 15px 10px var(--color-secondary); 
     box-shadow: 0px 0px 15px 10px var(--color-secondary);
-}  
-
-.buttons {
-    width: 90%;
-    margin: 50px auto 0 auto;
-    display: flex;
-    justify-content: space-around;
-    padding-left:10%;
 }
 
-.buttons button {
-    width: 120px;
-    height: 45px;
-    background-color:hsl(235, 35%, 19%);
-   color:white;
-   border:2px solid  hsl(358, 81%, 63%);
-    font-family: 'Poppins', sans-serif;
-    font-size: 18px;
-    border-radius: 5px;
+.controls button {
+    margin: 10px 10px;
+    padding: 10px 20px 10px 20px;
+    font-size: 1rem;
+    border-radius: 4px;
+    border: none;
+    transition: 0.8s;
     cursor: pointer;
-    outline: none;
-    margin:10px;
-    padding:10px;
+    border:2px solid  hsl(358, 81%, 63%);
     box-shadow: 0 0 10px rgb(232, 127, 127);
+    background: #082032;
+    color: whitesmoke;
 }
 
-.buttons button:nth-last-child(2) {
-   background-color:hsl(235, 35%, 19%);
-   color:white;
-   border:2px solid hsl(358, 81%, 63%);
-   box-shadow: 0 0 10px rgb(232, 127, 127);
-}
-
-.buttons button:nth-last-child(1) {
-    background-color:hsl(235, 35%, 19%);
-   color:white;
-   border:2px solid hsl(358, 81%, 63%);
-   box-shadow: 0 0 10px rgb(232, 127, 127);
-}
-
-.buttons button:hover {
+.controls button:hover {
     box-shadow: 0 0 20px rgb(246, 6, 6);
 }
+
+@media(max-width:480px) {
+    h1 {
+        font-size: 1.2rem;
+    }
+    .container {
+        max-width: 200px;
+    }
+    .time {
+        font-size: 2rem;
+    }
+    .controls button {
+        padding: 5px;
+        margin: 0.5px;
+    }
+}
+h4{
+    font-size:20px;
+}
     </style>
-    
+    <title>Stopwatch</title>
 </head>
+
 <body>
-    <section>
-        <div class="container">
-            <div class="timer-display">
-                00 : 00 : 00 : 000
-            </div>
-            <div class="buttons">
-                <button id="start-timer">Start</button>
-                <button id="pause-timer">Pause</button>
-                <button id="reset-timer">Reset</button>
-            </div>
+    <h1><i class="fa-solid fa-stopwatch"></i></h1>
+    <div class="container">
+        <div class="time">
+            00:00:00
         </div>
-    
-    </section>
+        <br>
+        <div class="controls">
+            <button id="start">Start</button>
+            <button id="lap">Lap</button>
+            <button id="stop">Stop</button>
+            <button id="reset">Reset</button>
+        </div>
+        <br>
+        <div class="lapping">
+            <h4 id = "lap1"> </h4>
+            <h4 id = "lap2"> </h4>
+            <h4 id = "lap3"> </h4>
+            <h4 id = "lap4"> </h4>
+            <h4 id = "lap5"> </h4>
+        </div>
+    </div>
 
     <script>
-        let [milliseconds, seconds, minutes, hours] = [0, 0, 0, 0];
-let timeRef = document.querySelector(".timer-display");
-let int = null;
+        var time_ele = document.getElementsByClassName("time")[0];
+var start_btn = document.getElementById("start");
+var lap_btn = document.getElementById("lap");
+var stop_btn = document.getElementById("stop");
+var reset_btn = document.getElementById("reset");
+var l1 = document.getElementById("lap1");
+var l2 = document.getElementById("lap2");
+var l3 = document.getElementById("lap3");
+var l4 = document.getElementById("lap4");
+var l5 = document.getElementById("lap5");
 
-document.getElementById("start-timer").addEventListener("click", () => {
-    if(int !== null) {
-        clearInterval(int);
+let seconds = 0;
+let interval = null;
+let ctr=0;
+
+start_btn.addEventListener("click", start);
+lap_btn.addEventListener("click", lap);
+stop_btn.addEventListener("click", stop);
+reset_btn.addEventListener("click", reset);
+
+
+function timer() {
+    seconds++;
+
+
+    let hrs = Math.floor(seconds / 3600);
+    let mins = Math.floor((seconds - (hrs * 3600)) / 60);
+    let sec = seconds % 60;
+
+    if(sec < 10)
+        sec = '0' + sec;
+
+    if(mins < 10)
+        mins = '0' + mins;
+
+    if(hrs < 10)
+        hrs = '0' + hrs;
+
+    time_ele.innerHTML = `${hrs}:${mins}:${sec}`;
+}
+
+function start() {
+    if(interval)
+    {
+        return;
     }
-    int = setInterval(displayTimer, 10);
-});
 
-document.getElementById("pause-timer").addEventListener("click", () => {
-    clearInterval(int);
-});
+    interval = setInterval(timer, 1000);
+}
 
-document.getElementById("reset-timer").addEventListener("click", () => {
-    clearInterval(int);
-    [milliseconds, seconds, minutes, hours] = [0, 0, 0, 0];
-    timeRef.innerHTML = "00 : 00 : 00 : 000 ";
-}); 
+function lap() {
+    ctr++;
+    if(ctr%5==1)
+        l1.innerHTML="Lap "+ ctr+ ":  " + time_ele.innerHTML;
+    if (ctr%5==2)
+        l2.innerHTML="Lap "+ ctr+ ":  " + time_ele.innerHTML;
+    if (ctr%5==3)
+        l3.innerHTML="Lap "+ ctr+ ":  " + time_ele.innerHTML;
+    if (ctr%5==4)
+        l4.innerHTML="Lap "+ ctr+ ":  " + time_ele.innerHTML;
+    if (ctr%5==0)
+        l5.innerHTML="Lap "+ ctr+ ":  " + time_ele.innerHTML;
 
-function displayTimer() {
-    milliseconds += 10;
-    if(milliseconds == 1000) {
-        milliseconds = 0;
-        seconds++;
-        if(seconds == 60) {
-            seconds = 0;
-            minutes++;
-            if(minutes == 60) {
-                minutes = 0;
-                hours++;
-            }
-        }
-    }
+}
 
-    let h = hours < 10 ? "0" + hours : hours;
-    let m = minutes < 10 ? "0" + minutes : minutes;
-    let s = seconds < 10 ? "0" + seconds : seconds;
-    let ms = 
-        milliseconds < 10
-        ? "00" + milliseconds
-        : milliseconds < 100
-        ? "0" + milliseconds
-        : milliseconds;
+function stop() {
+    clearInterval(interval);
+    interval = null;
+}
 
-    timeRef.innerHTML = `${h} : ${m} : ${s} : ${ms}`;
-
+function reset() {
+    stop();
+    seconds = 0;
+    ctr=0;
+    time_ele.innerHTML = "00:00:00";
 }
     </script>
 </body>
