@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stopwatch</title>
+    <style>
+        :root {
+            font-size: 82.5%; 
+    --color-secondary: hsl(358, 81%, 63%);
+}
+       *,
+*:before,
+*:after {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background:hsl(235, 35%, 19%);
+}
+
+.container {
+    width: min(42.5rem, 100%);
+    margin-inline: auto;
+    padding-inline: 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    padding-top:12%;
+    padding-left:10%;
+    color:hsla(0, 0%, 100%, 0.902);
+    font-size:25px;
+}
+
+
+.timer-display {
+  display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 30rem;
+    height: 30rem;
+    border-radius: 50%;
+    -webkit-box-shadow: 0px 0px 15px 10px var(--color-secondary); 
+    box-shadow: 0px 0px 15px 10px var(--color-secondary);
+}  
+
+.buttons {
+    width: 90%;
+    margin: 50px auto 0 auto;
+    display: flex;
+    justify-content: space-around;
+    padding-left:10%;
+}
+
+.buttons button {
+    width: 120px;
+    height: 45px;
+    background-color:hsl(235, 35%, 19%);
+   color:white;
+   border:2px solid  hsl(358, 81%, 63%);
+    font-family: 'Poppins', sans-serif;
+    font-size: 18px;
+    border-radius: 5px;
+    cursor: pointer;
+    outline: none;
+    margin:10px;
+    padding:10px;
+    box-shadow: 0 0 10px rgb(232, 127, 127);
+}
+
+.buttons button:nth-last-child(2) {
+   background-color:hsl(235, 35%, 19%);
+   color:white;
+   border:2px solid hsl(358, 81%, 63%);
+   box-shadow: 0 0 10px rgb(232, 127, 127);
+}
+
+.buttons button:nth-last-child(1) {
+    background-color:hsl(235, 35%, 19%);
+   color:white;
+   border:2px solid hsl(358, 81%, 63%);
+   box-shadow: 0 0 10px rgb(232, 127, 127);
+}
+
+.buttons button:hover {
+    box-shadow: 0 0 20px rgb(246, 6, 6);
+}
+    </style>
+    
+</head>
+<body>
+    <section>
+        <div class="container">
+            <div class="timer-display">
+                00 : 00 : 00 : 000
+            </div>
+            <div class="buttons">
+                <button id="start-timer">Start</button>
+                <button id="pause-timer">Pause</button>
+                <button id="reset-timer">Reset</button>
+            </div>
+        </div>
+    
+    </section>
+
+    <script>
+        let [milliseconds, seconds, minutes, hours] = [0, 0, 0, 0];
+let timeRef = document.querySelector(".timer-display");
+let int = null;
+
+document.getElementById("start-timer").addEventListener("click", () => {
+    if(int !== null) {
+        clearInterval(int);
+    }
+    int = setInterval(displayTimer, 10);
+});
+
+document.getElementById("pause-timer").addEventListener("click", () => {
+    clearInterval(int);
+});
+
+document.getElementById("reset-timer").addEventListener("click", () => {
+    clearInterval(int);
+    [milliseconds, seconds, minutes, hours] = [0, 0, 0, 0];
+    timeRef.innerHTML = "00 : 00 : 00 : 000 ";
+}); 
+
+function displayTimer() {
+    milliseconds += 10;
+    if(milliseconds == 1000) {
+        milliseconds = 0;
+        seconds++;
+        if(seconds == 60) {
+            seconds = 0;
+            minutes++;
+            if(minutes == 60) {
+                minutes = 0;
+                hours++;
+            }
+        }
+    }
+
+    let h = hours < 10 ? "0" + hours : hours;
+    let m = minutes < 10 ? "0" + minutes : minutes;
+    let s = seconds < 10 ? "0" + seconds : seconds;
+    let ms = 
+        milliseconds < 10
+        ? "00" + milliseconds
+        : milliseconds < 100
+        ? "0" + milliseconds
+        : milliseconds;
+
+    timeRef.innerHTML = `${h} : ${m} : ${s} : ${ms}`;
+
+}
+    </script>
+</body>
+</html>
